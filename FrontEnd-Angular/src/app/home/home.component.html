@@ -1,8 +1,8 @@
 <div style="text-align: center">
     <h2>HomeComponent</h2>
-    <h2> <a [routerLink]="['/function']">Chức năng</a> <br><br> </h2>
-    <h2> <a [routerLink]="['/role']">Quyền hạn</a> <br><br> </h2>
-    <h2> <a [routerLink]="['/user']">User</a> <br><br> </h2>
+    <div  *ngFor="let function of functions">
+        <h2> <a [routerLink]="function.functionURL">{{ function.functionName }}</a> <br><br> </h2>
+    </div>
     <h2> <a (click)="openModal()" data-toggle="modal" data-target="#myModal">Đổi mật khẩu</a> <br><br> </h2>
     <h2> <a [routerLink]="['/logout']">Logout</a> <br><br> </h2>
 

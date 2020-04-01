@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.User;
+import com.example.demo.model.Function;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,9 @@ public interface UserService {
 	public boolean delete(long id);
 
 	public boolean checkLogin(User user);
-
+        
+        public List<Function> getCurrentFunction(String token); 
+        
 	public boolean update(User user);
 
 	public boolean chagePass(User user);

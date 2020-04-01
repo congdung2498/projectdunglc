@@ -6,6 +6,8 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../services/login.service';
 import { User } from '../classes/user';
+import { Function } from '../classes/function';
+import { UserService } from '../user/user.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -13,11 +15,37 @@ import { User } from '../classes/user';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService, private loginService: LoginService) { }
-
+  constructor(private route: ActivatedRoute, private router: Router, private toastr: ToastrService, private loginService: LoginService, private userService: UserService) { }
+  currentUser: User = new User();
   pass: any = {};
   user: User = new User();
+  functions: Function[] = [];
   ngOnInit() {
+    this.getMenufromToken();
+  }
+
+  async getMenufromToken() {
+    this.userService.getCurrentFunction(localStorage.getItem('token')).subscribe(result => {
+      this.functions = result;
+      console.log(this.functions);
+    }, error => {
+      this.toastr.error('Error!', 'Có lỗi xảy ra', {
+        timeOut: 3000
+      });
+      return false;
+    });
+  }
+
+  addFunction(func) {
+    let check = true;
+    this.functions.forEach(function (f) {
+      if (func! = null && func.functionID == f.functionID) {
+        check = false;
+      }
+    });
+    if(check){
+      this.functions.push(func);
+    }
   }
 
   openModal() {
@@ -51,7 +79,7 @@ export class HomeComponent implements OnInit {
         if (result == true) {
           this.user.userName = localStorage.getItem('userName');
           this.user.password = this.pass.newPassword;
-          this.user.userID =  localStorage.getItem('userID');
+          this.user.userID = localStorage.getItem('userID');
           this.loginService.changePass(this.user).subscribe(
             data => {
               if (data == true) {

@@ -43,11 +43,11 @@ public class User {
 
     @Transient
     private String token;
-
+    
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tbl_role_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> role;
-
+    
     public String getToken() {
         return token;
     }

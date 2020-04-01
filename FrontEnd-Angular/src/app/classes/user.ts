@@ -1,3 +1,5 @@
+import { Role } from './role';
+
 export class User {
     userID :string;
     userName: string;
@@ -5,4 +7,5 @@ export class User {
     fullName: string;
     gender : number;
     status:number;
+    role: Role[];
 }

@@ -1,17 +1,19 @@
 package com.example.demo.service.Impl;
 
-
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
+import com.example.demo.model.Function;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.JwtService;
 import com.example.demo.service.UserService;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Override
     public User findById(long id) {
@@ -112,38 +117,57 @@ public class UserServiceImpl implements UserService {
     public boolean update(User us) {
         User user;
 
-        if (us!= null && us.getUserID() != 0) {
+        if (us != null && us.getUserID() != 0) {  //update
             user = userRepository.findOne(us.getUserID());
-        } else {
-            user= new User();
-        }
-        if (user != null) {
+            if (user != null) {
+                user.setFullName(us.getFullName());
+                user.setGender(us.getGender());
+                user.setStatus(us.getStatus());
+                if (us.getRole() != null && us.getRole().size() > 0) {
+                    user.getRole().clear();
+                    for (Role role : us.getRole()) {
+                        role = roleRepository.findOne(role.getRoleID());
+                        if (role != null) {
+                            user.getRole().add(role);
+                        }
+                    }
+                } else {
+                    return false;
+                }
 
-            user.setFullName(us.getFullName());
-            user.setGender(us.getGender());
-            user.setStatus(us.getStatus());
-            if (us.getRole() != null && us.getRole().size() > 0) {
-                user.getRole().clear();
+                if (user.getRole().size() > 0) {
+                    userRepository.save(user);
+                } else {
+                    return false;
+                }
+
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            user = new User();  //create
+            if (us.getUserName() != null && us.getPassword() != null && us.getRole() != null && us.getRole().size() > 0) {
+                user.setFullName(us.getFullName());
+                user.setGender(us.getGender());
+                user.setStatus(us.getStatus());
+                user.setUserName(us.getUserName());
+                String encodedString = new BCryptPasswordEncoder().encode(us.getPassword());
+                user.setPassword(encodedString);
+                user.setRole(new HashSet<Role>());
                 for (Role role : us.getRole()) {
                     role = roleRepository.findOne(role.getRoleID());
                     if (role != null) {
                         user.getRole().add(role);
                     }
                 }
-            } else {
-                return false;
-            }
-
-            if (user.getRole().size() > 0) {
                 userRepository.save(user);
+                return true;
             } else {
                 return false;
             }
-
-            return true;
-        } else {
-            return false;
         }
+
     }
 
     @Override
@@ -162,9 +186,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAll() {
-    return userRepository.findAll();
+        return userRepository.findAll();
     }
 
-   
+    @Override
+    public List<Function> getCurrentFunction(String token) {
+        String username = jwtService.getUsernameFromToken(token);
+        List<Function> functions = new ArrayList<Function>();
+        User user = loadUserByUsername(username);
+        if (user != null && user.getRole() != null && user.getRole().size() > 0) {
+            for (Role r : user.getRole()) {
+                if (r.getFunction() != null && r.getFunction().size() > 0) {
+                    for (Function f : r.getFunction()) {
+                        boolean isDuplicate = false;
+                        for(Function fc :functions){
+                            if(fc.getFunctionID() == f.getFunctionID() ){
+                                isDuplicate = true;
+                            }
+                        } 
+                        if (!isDuplicate) functions.add(f);
+                    }
+                }
+            }
+        }
+        return functions;
+    }
+    
 
 }
