@@ -18,20 +18,20 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @Secured({"ROLE_ROLE", "ROLE_USER"})
     @GetMapping("/getAll")
     @ResponseBody
     public ResponseEntity getAll() {
         return ResponseEntity.ok(roleService.getAll());
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ROLE")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity save(@RequestBody Role role) {
         return ResponseEntity.ok(roleService.save(role));
 
     }
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ROLE")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public ResponseEntity delete(@RequestBody Role role) {
         return ResponseEntity.ok(roleService.delete(role));

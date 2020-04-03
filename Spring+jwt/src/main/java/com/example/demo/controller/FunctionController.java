@@ -20,21 +20,21 @@ public class FunctionController {
     @Autowired
     private FunctionService functionService;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @Secured({"ROLE_ROLE", "ROLE_FUNCTION"})
     @GetMapping("/getAll")
     @ResponseBody
     public ResponseEntity getAll() {
         return ResponseEntity.ok(functionService.getAll());
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_FUNCTION")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ResponseEntity save(@RequestBody Function func) {
         return ResponseEntity.ok(functionService.save(func));
 
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_FUNCTION")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public ResponseEntity delete(@RequestBody Function func) {
         return ResponseEntity.ok(functionService.delete(func));

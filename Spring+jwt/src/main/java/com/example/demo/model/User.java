@@ -116,7 +116,15 @@ public class User {
     public List<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for(Role r : role){
-             authorities.add(new SimpleGrantedAuthority(r.getRoleName()));
+             for (Function f : r.getFunction()) {
+                        boolean isDuplicate = false;
+                        for(GrantedAuthority au : authorities){
+                            if(au.getAuthority() == f.getFunctionCode()){
+                                isDuplicate = true;
+                            }
+                        } 
+                        if (!isDuplicate) authorities.add(new SimpleGrantedAuthority(f.getFunctionCode()));
+                    }
         }
        
         return authorities;

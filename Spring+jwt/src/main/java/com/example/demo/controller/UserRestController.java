@@ -30,28 +30,27 @@ public class UserRestController {
     @Autowired
     private UserService userService;
     
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_USER")
     @GetMapping("/user/getAll")
     @ResponseBody
     public ResponseEntity getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
     
-    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/user/getCurrentFunction", method = RequestMethod.POST)
     public ResponseEntity save(@RequestBody String token) {
         return ResponseEntity.ok(userService.getCurrentFunction(token));
 
     }
     
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ROLE")
     @RequestMapping(value = "/user/save", method = RequestMethod.POST)
     public ResponseEntity save(@RequestBody User user) {
         return ResponseEntity.ok(userService.update(user));
 
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_ROLE")
     @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
     public ResponseEntity delete(@RequestBody User user) {
         return ResponseEntity.ok(userService.delete(user.getUserID()));
